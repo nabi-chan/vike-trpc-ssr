@@ -1,4 +1,6 @@
 {
+  "name": "vike-trpc-ssr",
+  "description": "Use TRPC with Vike",
   "type": "module",
   "scripts": {
     "build": "vite build",
