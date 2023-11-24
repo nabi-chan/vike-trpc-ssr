@@ -34,6 +34,10 @@ export async function onBeforeRender() {
 
 ## WebSocket
 
+> [!WARNING]
+> Due to vercel limitations, WebSocket is not available in vercel deployment.
+> If you use WebSocket on Vercel deployment, Page will be crashed.
+
 Also, you can use WebSocket with `trpc.useSubscription`
 
 See [pages/subscription/index.page.tsx](./src/pages/subscription/index.page.tsx).
@@ -51,6 +55,16 @@ export function Page() {
 
   return <div>{count}</div>;
 }
+```
+
+## Vercel deployment
+
+You can deploy this example to vercel.
+
+See https://vike-trpc-ssr.vercel.app
+
+```bash
+vercel . --prod
 ```
 
 ## Recommend documents

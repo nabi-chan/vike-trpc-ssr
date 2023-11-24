@@ -1,5 +1,5 @@
 import { Hydrate, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createWSClient, httpBatchLink, loggerLink, splitLink, wsLink } from '@trpc/client';
+import { loggerLink, splitLink } from '@trpc/client';
 import ReactDOMServer from 'react-dom/server';
 import { dangerouslySkipEscape, escapeInject } from 'vike/server';
 import ws from 'ws';
@@ -8,21 +8,20 @@ import { PageContextServer } from '#/types/types';
 import { trpc } from '#/trpc/trpc.client';
 import { PageShell } from '#/components/pageShell/PageShell';
 import { helpers } from '#/trpc/trpc.server';
+import { VITE_TRPC_HOST, VITE_WSS_HOST } from '#/constants/env';
+import { httpBatchLink, wsLink } from '#/trpc/link';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 globalThis.WebSocket = ws as any;
 
 const queryClient = new QueryClient();
-const wsClient = createWSClient({
-  url: `wss://${import.meta.env.VITE_WSS_HOST}`,
-});
 const trpcClient = trpc.createClient({
   links: [
     loggerLink(),
     splitLink({
       condition: (op) => op.type === 'subscription',
-      true: wsLink({ client: wsClient }),
-      false: httpBatchLink({ url: `https://${import.meta.env.VITE_TRPC_HOST}/trpc` }),
+      true: wsLink({ url: `wss://${VITE_WSS_HOST}` }),
+      false: httpBatchLink({ url: `https://${VITE_TRPC_HOST}/trpc` }),
     }),
   ],
 });

@@ -1,23 +1,21 @@
 import { PageShell } from '#/components/pageShell/PageShell';
+import { httpBatchLink, loggerLink, wsLink } from '#/trpc/link';
 import { trpc } from '#/trpc/trpc.client';
 import { PageContextClient } from '#/types/types';
 import { Hydrate, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createWSClient, httpBatchLink, loggerLink, splitLink, wsLink } from '@trpc/react-query';
+import { splitLink } from '@trpc/client';
 import { createRoot, hydrateRoot, type Root } from 'react-dom/client';
 
 let root: Root;
 
 const queryClient = new QueryClient();
-const wsClient = createWSClient({
-  url: `wss://${import.meta.env.VITE_WSS_HOST}`,
-});
 const trpcClient = trpc.createClient({
   links: [
     loggerLink(),
     splitLink({
       condition: (op) => op.type === 'subscription',
-      true: wsLink({ client: wsClient }),
-      false: httpBatchLink({ url: `https://${import.meta.env.VITE_TRPC_HOST}/trpc` }),
+      true: wsLink({ url: `wss://${window.location.host}` }),
+      false: httpBatchLink({ url: `https://${window.location.host}/trpc` }),
     }),
   ],
 });
